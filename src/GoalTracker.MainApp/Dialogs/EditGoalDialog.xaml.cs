@@ -36,8 +36,9 @@ public sealed partial class EditGoalDialog : ContentDialog
         UseTasksToggle.IsOn = Goal.UseTasksForProgress;
         ManualProgress.Value = Goal.ManualProgressPercent;
 
-        if (Goal.DueDate.HasValue)
-            DueDatePicker.Date = Goal.DueDate.Value;
+        DueDatePicker.Date = Goal.DueDate.HasValue
+            ? new DateTimeOffset(Goal.DueDate.Value)
+            : DateTimeOffset.Now;
 
         UseTasksToggle.Toggled += (_, _) =>
         {
@@ -54,9 +55,7 @@ public sealed partial class EditGoalDialog : ContentDialog
             Goal.Color = string.IsNullOrWhiteSpace(ColorBox.Text) ? "#0078D4" : ColorBox.Text.Trim();
             Goal.UseTasksForProgress = UseTasksToggle.IsOn;
             Goal.ManualProgressPercent = (int)ManualProgress.Value;
-            Goal.DueDate = DueDatePicker.Date.HasValue
-                ? DueDatePicker.Date.Value.DateTime
-                : null;
+            Goal.DueDate = DueDatePicker.Date.DateTime;
         };
     }
 }

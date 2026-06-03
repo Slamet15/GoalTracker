@@ -15,8 +15,8 @@ public sealed partial class DashboardPage : Page
     {
         base.OnNavigatedTo(e);
         await RefreshAsync();
-        App.FileWatcher.DataFileChanged += async (_, _) =>
-            await DispatcherQueue.TryEnqueue(async () => await RefreshAsync());
+        App.FileWatcher.DataFileChanged += (_, _) =>
+            DispatcherQueue.TryEnqueue(async () => await RefreshAsync());
     }
 
     private async Task RefreshAsync()

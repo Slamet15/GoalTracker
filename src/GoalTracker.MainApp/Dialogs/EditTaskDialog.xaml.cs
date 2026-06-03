@@ -30,8 +30,9 @@ public sealed partial class EditTaskDialog : ContentDialog
         TodayToggle.IsOn = Task.IsTodayTask;
         PriorityCombo.SelectedIndex = (int)Task.Priority;
 
-        if (Task.DueDate.HasValue)
-            DueDatePicker.Date = Task.DueDate.Value;
+        DueDatePicker.Date = Task.DueDate.HasValue
+            ? new DateTimeOffset(Task.DueDate.Value)
+            : DateTimeOffset.Now;
 
         PrimaryButtonClick += (_, _) =>
         {
@@ -39,9 +40,7 @@ public sealed partial class EditTaskDialog : ContentDialog
             Task.Notes = NotesBox.Text.Trim();
             Task.Priority = (TaskPriority)PriorityCombo.SelectedIndex;
             Task.IsTodayTask = TodayToggle.IsOn;
-            Task.DueDate = DueDatePicker.Date.HasValue
-                ? DueDatePicker.Date.Value.DateTime
-                : null;
+            Task.DueDate = DueDatePicker.Date.DateTime;
         };
     }
 }

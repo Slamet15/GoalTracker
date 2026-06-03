@@ -28,8 +28,8 @@ public sealed partial class TasksPage : Page
         App.FileWatcher.DataFileChanged -= OnDataChanged;
     }
 
-    private async void OnDataChanged(object? sender, EventArgs e) =>
-        await DispatcherQueue.TryEnqueue(async () => await LoadAsync());
+    private void OnDataChanged(object? sender, EventArgs e) =>
+        DispatcherQueue.TryEnqueue(async () => await LoadAsync());
 
     private async Task LoadAsync()
     {

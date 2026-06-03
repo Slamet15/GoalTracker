@@ -82,7 +82,9 @@ public sealed partial class WidgetWindow : Window
 
     private void DragHandle_PointerPressed(object sender, PointerRoutedEventArgs e)
     {
-        _appWindow.BeginInteractiveMove();
+        var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+        NativeMethods.ReleaseCapture();
+        NativeMethods.SendMessage(hwnd, 0x00A1, new IntPtr(2), IntPtr.Zero);
     }
 
     private void CollapseBtn_Click(object sender, RoutedEventArgs e)
@@ -107,5 +109,11 @@ public sealed partial class WidgetWindow : Window
 
         [DllImport("user32.dll")]
         public static extern uint SetWindowLong(IntPtr hWnd, int nIndex, uint dwNewLong);
+
+        [DllImport("user32.dll")]
+        public static extern bool ReleaseCapture();
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
     }
 }

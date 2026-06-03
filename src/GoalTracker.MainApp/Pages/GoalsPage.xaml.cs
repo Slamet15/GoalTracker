@@ -29,9 +29,9 @@ public sealed partial class GoalsPage : Page
         App.FileWatcher.DataFileChanged -= OnDataChanged;
     }
 
-    private async void OnDataChanged(object? sender, EventArgs e)
+    private void OnDataChanged(object? sender, EventArgs e)
     {
-        await DispatcherQueue.TryEnqueue(async () =>
+        DispatcherQueue.TryEnqueue(async () =>
         {
             await _vm.LoadAsync();
             GoalsList.ItemsSource = _vm.Goals;
