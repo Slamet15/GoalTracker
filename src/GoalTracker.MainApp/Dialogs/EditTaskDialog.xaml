@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentDialog
+    x:Class="GoalTracker.MainApp.Dialogs.EditTaskDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Task"
+    PrimaryButtonText="Save"
+    CloseButtonText="Cancel"
+    DefaultButton="Primary">
+
+    <StackPanel Spacing="12" Width="380">
+        <TextBox x:Name="TitleBox" Header="Title" PlaceholderText="Task title"/>
+        <TextBox x:Name="NotesBox" Header="Notes" PlaceholderText="Optional notes"
+                 AcceptsReturn="True" Height="60" TextWrapping="Wrap"/>
+        <ComboBox x:Name="PriorityCombo" Header="Priority">
+            <ComboBoxItem Content="Low"/>
+            <ComboBoxItem Content="Normal" IsSelected="True"/>
+            <ComboBoxItem Content="High"/>
+            <ComboBoxItem Content="Critical"/>
+        </ComboBox>
+        <DatePicker x:Name="DueDatePicker" Header="Due Date (optional)"/>
+        <ToggleSwitch x:Name="TodayToggle" Header="Pin to Today"/>
+    </StackPanel>
+</ContentDialog>

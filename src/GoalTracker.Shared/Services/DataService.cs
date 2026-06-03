@@ -1,0 +1,103 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using GoalTracker.Shared.Helpers;
+using GoalTracker.Shared.Models;
+using GoalTracker.Shared.Enums;
+
+namespace GoalTracker.Shared.Services;
+
+public class DataService : IDataService
+{
+    private const string MutexName = "GoalTracker_DataFile_Mutex";
+
+    public static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        WriteIndented = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Converters = { new JsonStringEnumConverter() }
+    };
+
+    public async Task<AppData> LoadAsync()
+    {
+        DataPaths.EnsureDirectoryExists();
+
+        if (!File.Exists(DataPaths.AppDataFile))
+            return new AppData();
+
+        for (int attempt = 0; attempt < 5; attempt++)
+        {
+            try
+            {
+                await using var fs = new FileStream(
+                    DataPaths.AppDataFile,
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.Read);
+
+                var data = await JsonSerializer.DeserializeAsync<AppData>(fs, JsonOptions)
+                           ?? new AppData();
+
+                EnrichComputedFields(data);
+                return data;
+            }
+            catch (IOException) when (attempt < 4)
+            {
+                await Task.Delay(50 * (attempt + 1));
+            }
+        }
+
+        return new AppData();
+    }
+
+    public async Task SaveAsync(AppData data)
+    {
+        DataPaths.EnsureDirectoryExists();
+        data.LastModified = DateTime.UtcNow;
+
+        using var mutex = new Mutex(false, MutexName);
+        mutex.WaitOne(TimeSpan.FromSeconds(5));
+        try
+        {
+            var tmpPath = DataPaths.AppDataFile + ".tmp";
+            await using (var fs = new FileStream(
+                tmpPath,
+                FileMode.Create,
+                FileAccess.Write,
+                FileShare.None))
+            {
+                await JsonSerializer.SerializeAsync(fs, data, JsonOptions);
+                await fs.FlushAsync();
+            }
+            File.Move(tmpPath, DataPaths.AppDataFile, overwrite: true);
+        }
+        finally
+        {
+            mutex.ReleaseMutex();
+        }
+    }
+
+    private static void EnrichComputedFields(AppData data)
+    {
+        foreach (var goal in data.Goals)
+        {
+            if (goal.UseTasksForProgress)
+            {
+                var linked = data.Tasks.Where(t => goal.LinkedTaskIds.Contains(t.Id)).ToList();
+                goal.ProgressPercent = linked.Count == 0 ? 0
+                    : (int)(linked.Count(t => t.IsCompleted) * 100.0 / linked.Count);
+            }
+            else
+            {
+                goal.ProgressPercent = goal.ManualProgressPercent;
+            }
+        }
+
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        foreach (var habit in data.Habits)
+        {
+            habit.CompletedToday = habit.CompletionDates.Contains(today);
+            (habit.CurrentStreak, habit.LongestStreak) =
+                StreakCalculator.Calculate(habit.CompletionDates, habit.Frequency);
+        }
+    }
+}

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="GoalTracker.Widget.Views.ActivitySectionView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <StackPanel Spacing="4">
+        <TextBlock Text="ACTIVITY" Foreground="White" Opacity="0.5" FontSize="10" FontWeight="SemiBold"
+                   CharacterSpacing="150"/>
+
+        <!-- Running timer indicator -->
+        <Border x:Name="RunningBorder" CornerRadius="4" Padding="6,3"
+                Background="#20FFFFFF" Visibility="Collapsed">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <Ellipse Width="6" Height="6" Fill="#00CC44"/>
+                <TextBlock x:Name="RunningLabel" Foreground="White" FontSize="11"
+                           TextTrimming="CharacterEllipsis"/>
+                <Button x:Name="StopBtn" Content="Stop" Click="Stop_Click"
+                        Height="20" FontSize="10" Padding="6,0"
+                        Background="#40FFFFFF" BorderThickness="0"/>
+            </StackPanel>
+        </Border>
+
+        <ItemsControl x:Name="ActivityList">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnSpacing="6" Margin="0,2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding Title}" Foreground="White"
+                                   FontSize="11" TextTrimming="CharacterEllipsis" Opacity="0.85"/>
+                        <TextBlock Grid.Column="1" Foreground="White" Opacity="0.6" FontSize="11">
+                            <Run Text="{Binding Duration.Hours}"/>
+                            <Run Text="h"/>
+                            <Run Text="{Binding Duration.Minutes}"/>
+                            <Run Text="m"/>
+                        </TextBlock>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</UserControl>
