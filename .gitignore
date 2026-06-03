@@ -16,3 +16,6 @@ packages/
 # OS
 Thumbs.db
 .DS_Store
+
+# Claude Code local settings (personal hooks)
+.claude/settings.local.json
