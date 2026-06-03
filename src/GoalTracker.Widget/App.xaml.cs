@@ -25,10 +25,14 @@ public partial class App : Application
     {
         FileWatcher.Start();
         await WidgetVm.LoadAsync();
-        FileWatcher.DataFileChanged += async (_, _) => await WidgetVm.LoadAsync();
 
         _window = new WidgetWindow();
         _window.Activate();
+
+        // Capture the UI DispatcherQueue AFTER the window is created
+        var dq = _window.DispatcherQueue;
+        FileWatcher.DataFileChanged += async (_, _) =>
+            dq.TryEnqueue(async () => await WidgetVm.LoadAsync());
 
         SetupTrayIcon();
     }
