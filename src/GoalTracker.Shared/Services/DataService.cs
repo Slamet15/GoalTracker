@@ -78,9 +78,21 @@ public class DataService : IDataService
 
     private static void EnrichComputedFields(AppData data)
     {
+        // Build a fast category lookup
+        var categoryMap = data.Categories.ToDictionary(c => c.Id);
+
         foreach (var goal in data.Goals)
         {
-            if (goal.UseTasksForProgress)
+            // Progress: milestones take priority, then tasks, then manual
+            if (goal.Milestones.Count > 0)
+            {
+                goal.ProgressPercent = goal.Milestones
+                    .Where(m => m.IsCompleted)
+                    .Sum(m => m.CompletionPercent);
+                // Cap at 100 in case percentages were set over 100 total
+                goal.ProgressPercent = Math.Min(100, goal.ProgressPercent);
+            }
+            else if (goal.UseTasksForProgress)
             {
                 var linked = data.Tasks.Where(t => goal.LinkedTaskIds.Contains(t.Id)).ToList();
                 goal.ProgressPercent = linked.Count == 0 ? 0
@@ -89,6 +101,18 @@ public class DataService : IDataService
             else
             {
                 goal.ProgressPercent = goal.ManualProgressPercent;
+            }
+
+            // Populate category display fields
+            if (goal.CategoryId.HasValue && categoryMap.TryGetValue(goal.CategoryId.Value, out var cat))
+            {
+                goal.CategoryName  = cat.Name;
+                goal.CategoryEmoji = cat.Emoji;
+            }
+            else
+            {
+                goal.CategoryName  = null;
+                goal.CategoryEmoji = null;
             }
         }
 

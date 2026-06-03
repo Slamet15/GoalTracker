@@ -10,6 +10,7 @@ namespace GoalTracker.MainApp.Pages;
 public sealed partial class HabitsPage : Page
 {
     private readonly HabitsViewModel _vm = new();
+    private bool _localSaving;
 
     public HabitsPage()
     {
@@ -19,7 +20,7 @@ public sealed partial class HabitsPage : Page
     protected override async void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
-        await LoadAsync();
+        await RefreshAsync();
         App.FileWatcher.DataFileChanged += OnDataChanged;
     }
 
@@ -28,10 +29,13 @@ public sealed partial class HabitsPage : Page
         App.FileWatcher.DataFileChanged -= OnDataChanged;
     }
 
-    private void OnDataChanged(object? sender, EventArgs e) =>
-        DispatcherQueue.TryEnqueue(async () => await LoadAsync());
+    private void OnDataChanged(object? sender, EventArgs e)
+    {
+        if (_localSaving) return;
+        DispatcherQueue.TryEnqueue(async () => await RefreshAsync());
+    }
 
-    private async Task LoadAsync()
+    private async Task RefreshAsync()
     {
         await _vm.LoadAsync();
         HabitsList.ItemsSource = _vm.Habits;
@@ -40,24 +44,47 @@ public sealed partial class HabitsPage : Page
     private async void AddHabit_Click(object sender, RoutedEventArgs e)
     {
         var dialog = new EditHabitDialog(new Habit()) { XamlRoot = XamlRoot };
-        if (await dialog.ShowAsync() == ContentDialogResult.Primary)
-            await _vm.SaveHabitAsync(dialog.Habit);
+        await dialog.ShowAsync(); // always refresh regardless of result
+        _localSaving = true;
+        if (dialog.Saved) await _vm.SaveHabitAsync(dialog.Habit);
+        _localSaving = false;
+        await RefreshAsync();
+    }
+
+    private async void EditHabit_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { Tag: Habit habit })
+        {
+            var dialog = new EditHabitDialog(habit) { XamlRoot = XamlRoot };
+            await dialog.ShowAsync();
+            _localSaving = true;
+            if (dialog.Saved) await _vm.SaveHabitAsync(dialog.Habit);
+            _localSaving = false;
+            await RefreshAsync();
+        }
     }
 
     private async void ToggleHabit_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button { Tag: Habit habit })
+        {
+            _localSaving = true;
             await _vm.ToggleHabitTodayCommand.ExecuteAsync(habit);
+            _localSaving = false;
+            await RefreshAsync();
+        }
     }
 
     private async void DeleteHabit_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button { Tag: Habit habit })
         {
+            _localSaving = true;
             var data = await App.DataService.LoadAsync();
             data.Habits.RemoveAll(h => h.Id == habit.Id);
             await App.DataService.SaveAsync(data);
-            await LoadAsync();
+            _localSaving = false;
+            await RefreshAsync();
         }
     }
 }

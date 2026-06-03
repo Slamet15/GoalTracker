@@ -10,6 +10,7 @@ namespace GoalTracker.MainApp.Pages;
 public sealed partial class GoalsPage : Page
 {
     private readonly GoalsViewModel _vm = new();
+    private bool _localSaving; // debounce FileWatcher during local saves
 
     public GoalsPage()
     {
@@ -19,8 +20,7 @@ public sealed partial class GoalsPage : Page
     protected override async void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
-        await _vm.LoadAsync();
-        GoalsList.ItemsSource = _vm.Goals;
+        await RefreshAsync();
         App.FileWatcher.DataFileChanged += OnDataChanged;
     }
 
@@ -31,21 +31,28 @@ public sealed partial class GoalsPage : Page
 
     private void OnDataChanged(object? sender, EventArgs e)
     {
-        DispatcherQueue.TryEnqueue(async () =>
-        {
-            await _vm.LoadAsync();
-            GoalsList.ItemsSource = _vm.Goals;
-        });
+        if (_localSaving) return; // skip — we reload ourselves after save
+        DispatcherQueue.TryEnqueue(async () => await RefreshAsync());
+    }
+
+    private async Task RefreshAsync()
+    {
+        await _vm.LoadAsync();
+        GoalsList.ItemsSource = _vm.Goals;
     }
 
     private async void AddGoal_Click(object sender, RoutedEventArgs e)
     {
         var dialog = new EditGoalDialog(new Goal()) { XamlRoot = XamlRoot };
-        if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+        var result = await dialog.ShowAsync();
+        if (result == ContentDialogResult.Primary)
         {
+            _localSaving = true;
             await _vm.SaveGoalAsync(dialog.Goal);
-            GoalsList.ItemsSource = _vm.Goals;
+            _localSaving = false;
         }
+        // Always refresh — even on cancel, to catch any state changes
+        await RefreshAsync();
     }
 
     private async void EditGoal_Click(object sender, RoutedEventArgs e)
@@ -53,17 +60,25 @@ public sealed partial class GoalsPage : Page
         if (sender is Button { Tag: Goal goal })
         {
             var dialog = new EditGoalDialog(goal) { XamlRoot = XamlRoot };
-            if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
             {
+                _localSaving = true;
                 await _vm.SaveGoalAsync(dialog.Goal);
-                GoalsList.ItemsSource = _vm.Goals;
+                _localSaving = false;
             }
+            await RefreshAsync();
         }
     }
 
     private async void DeleteGoal_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button { Tag: Goal goal })
+        {
+            _localSaving = true;
             await _vm.DeleteGoalCommand.ExecuteAsync(goal);
+            _localSaving = false;
+            await RefreshAsync();
+        }
     }
 }

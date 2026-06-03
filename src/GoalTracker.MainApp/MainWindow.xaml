@@ -5,40 +5,54 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="Goal Tracker">
 
-    <NavigationView x:Name="NavView"
-                    PaneTitle="Goal Tracker"
-                    IsSettingsVisible="True"
-                    SelectionChanged="NavView_SelectionChanged"
-                    Loaded="NavView_Loaded">
+    <Grid Background="#141414">
+        <NavigationView x:Name="NavView"
+                        IsSettingsVisible="True"
+                        SelectionChanged="NavView_SelectionChanged"
+                        Loaded="NavView_Loaded"
+                        OpenPaneLength="200">
 
-        <NavigationView.MenuItems>
-            <NavigationViewItem Tag="dashboard" Content="Dashboard">
-                <NavigationViewItem.Icon>
-                    <FontIcon Glyph="&#xE80F;"/>
-                </NavigationViewItem.Icon>
-            </NavigationViewItem>
-            <NavigationViewItem Tag="goals" Content="Goals">
-                <NavigationViewItem.Icon>
-                    <FontIcon Glyph="&#xE7C1;"/>
-                </NavigationViewItem.Icon>
-            </NavigationViewItem>
-            <NavigationViewItem Tag="tasks" Content="Tasks">
-                <NavigationViewItem.Icon>
-                    <FontIcon Glyph="&#xE9D5;"/>
-                </NavigationViewItem.Icon>
-            </NavigationViewItem>
-            <NavigationViewItem Tag="habits" Content="Habits">
-                <NavigationViewItem.Icon>
-                    <FontIcon Glyph="&#xE895;"/>
-                </NavigationViewItem.Icon>
-            </NavigationViewItem>
-            <NavigationViewItem Tag="activity" Content="Activity Log">
-                <NavigationViewItem.Icon>
-                    <FontIcon Glyph="&#xE823;"/>
-                </NavigationViewItem.Icon>
-            </NavigationViewItem>
-        </NavigationView.MenuItems>
+            <NavigationView.PaneHeader>
+                <TextBlock Text="Goal Tracker"
+                           FontSize="14" FontWeight="SemiBold"
+                           Foreground="#E8E8E8"
+                           Margin="16,12,0,0"/>
+            </NavigationView.PaneHeader>
 
-        <Frame x:Name="ContentFrame" Padding="16"/>
-    </NavigationView>
+            <NavigationView.MenuItems>
+                <NavigationViewItem Tag="dashboard" Content="Dashboard">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE80F;" Foreground="#666666"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Tag="goals" Content="Goals">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE7C1;" Foreground="#666666"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Tag="tasks" Content="Tasks">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE9D5;" Foreground="#666666"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Tag="habits" Content="Habits">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE895;" Foreground="#666666"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Tag="activity" Content="Activity Log">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE823;" Foreground="#666666"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Tag="categories" Content="Categories">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE81E;" Foreground="#666666"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+
+            <Frame x:Name="ContentFrame" Padding="24,20"/>
+        </NavigationView>
+    </Grid>
 </Window>

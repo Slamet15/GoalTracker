@@ -7,6 +7,7 @@ namespace GoalTracker.MainApp.Dialogs;
 public sealed partial class EditHabitDialog : ContentDialog
 {
     public Habit Habit { get; private set; }
+    public bool Saved { get; private set; }
 
     public EditHabitDialog(Habit habit)
     {
@@ -30,6 +31,7 @@ public sealed partial class EditHabitDialog : ContentDialog
 
         PrimaryButtonClick += (_, _) =>
         {
+            Saved = true;
             Habit.Title = TitleBox.Text.Trim();
             Habit.Description = DescBox.Text.Trim();
             Habit.Emoji = EmojiBox.Text.Trim();

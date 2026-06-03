@@ -8,4 +8,5 @@ public class AppData
     public List<GoalTask> Tasks { get; set; } = [];
     public List<Habit> Habits { get; set; } = [];
     public List<ActivityEntry> ActivityLog { get; set; } = [];
+    public List<Category> Categories { get; set; } = [];
 }

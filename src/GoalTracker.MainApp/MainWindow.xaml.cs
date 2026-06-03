@@ -1,6 +1,8 @@
 using GoalTracker.MainApp.Pages;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 
 namespace GoalTracker.MainApp;
@@ -12,6 +14,10 @@ public sealed partial class MainWindow : Window
         InitializeComponent();
         Title = "Goal Tracker";
         this.AppWindow.Resize(new Windows.Graphics.SizeInt32(1100, 720));
+
+        // Dark pane background via theme resource override
+        NavView.Resources["NavigationViewContentBackground"] =
+            new SolidColorBrush(Windows.UI.Color.FromArgb(255, 20, 20, 20));
     }
 
     private void NavView_Loaded(object sender, RoutedEventArgs e)
@@ -37,8 +43,9 @@ public sealed partial class MainWindow : Window
                 "goals"     => typeof(GoalsPage),
                 "tasks"     => typeof(TasksPage),
                 "habits"    => typeof(HabitsPage),
-                "activity"  => typeof(ActivityLogPage),
-                _           => null
+                "activity"   => typeof(ActivityLogPage),
+                "categories" => typeof(CategoriesPage),
+                _            => null
             };
 
             if (pageType is not null)

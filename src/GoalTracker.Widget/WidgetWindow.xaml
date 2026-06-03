@@ -5,95 +5,78 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:views="using:GoalTracker.Widget.Views">
 
-    <Grid Background="Transparent">
-        <Border CornerRadius="12" Padding="1">
-            <Border.Background>
-                <SolidColorBrush Color="#1A1A2E" Opacity="0.85"/>
-            </Border.Background>
+    <Grid Background="#141414">
 
-            <Grid Padding="12" RowSpacing="8">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+        <Grid Padding="16,12,16,16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-                <!-- ── Title bar / drag handle ── -->
-                <Grid Grid.Row="0" x:Name="DragHandle"
-                      PointerPressed="DragHandle_PointerPressed"
-                      Padding="0,0,0,6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
+            <!-- ── Title bar ── -->
+            <Grid Grid.Row="0"
+                  x:Name="DragHandle"
+                  PointerPressed="DragHandle_PointerPressed"
+                  Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-                    <!-- Title -->
-                    <TextBlock Grid.Column="0"
-                               Text="Goal Tracker"
-                               Foreground="White" Opacity="0.5"
-                               Style="{StaticResource CaptionTextBlockStyle}"
-                               VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="0"
+                           Text="GOAL TRACKER"
+                           FontSize="10"
+                           FontWeight="SemiBold"
+                           CharacterSpacing="150"
+                           Foreground="#3A3A3A"
+                           VerticalAlignment="Center"/>
 
-                    <!-- Control buttons -->
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2">
+                <!-- Minimal control buttons -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="0">
 
-                        <!-- Collapse / Expand -->
-                        <Button x:Name="CollapseBtn"
-                                Click="CollapseBtn_Click"
-                                ToolTipService.ToolTip="Collapse"
-                                Width="26" Height="26" Padding="0"
-                                Background="Transparent" BorderThickness="0"
-                                CornerRadius="4">
-                            <FontIcon x:Name="CollapseIcon"
-                                      Glyph="&#xE96D;"
-                                      FontSize="10" Foreground="White"/>
-                        </Button>
+                    <Button x:Name="CollapseBtn" Click="CollapseBtn_Click"
+                            Width="24" Height="24" Padding="0"
+                            Background="Transparent" BorderThickness="0"
+                            CornerRadius="4">
+                        <FontIcon x:Name="CollapseIcon" Glyph="&#xE96D;"
+                                  FontSize="8" Foreground="#3A3A3A"/>
+                    </Button>
 
-                        <!-- Pin / Unpin always-on-top -->
-                        <Button x:Name="PinBtn"
-                                Click="PinBtn_Click"
-                                ToolTipService.ToolTip="Unpin from top"
-                                Width="26" Height="26" Padding="0"
-                                Background="Transparent" BorderThickness="0"
-                                CornerRadius="4">
-                            <FontIcon x:Name="PinIcon"
-                                      Glyph="&#xE840;"
-                                      FontSize="10" Foreground="#4FC3F7"/>
-                        </Button>
+                    <Button x:Name="PinBtn" Click="PinBtn_Click"
+                            Width="24" Height="24" Padding="0"
+                            Background="Transparent" BorderThickness="0"
+                            CornerRadius="4">
+                        <FontIcon x:Name="PinIcon" Glyph="&#xE840;"
+                                  FontSize="8" Foreground="#3D8EF0"/>
+                    </Button>
 
-                        <!-- Hide to tray -->
-                        <Button x:Name="HideBtn"
-                                Click="HideBtn_Click"
-                                ToolTipService.ToolTip="Hide to tray"
-                                Width="26" Height="26" Padding="0"
-                                Background="Transparent" BorderThickness="0"
-                                CornerRadius="4">
-                            <FontIcon Glyph="&#xE921;"
-                                      FontSize="10" Foreground="White"/>
-                        </Button>
+                    <Button x:Name="HideBtn" Click="HideBtn_Click"
+                            Width="24" Height="24" Padding="0"
+                            Background="Transparent" BorderThickness="0"
+                            CornerRadius="4">
+                        <FontIcon Glyph="&#xE921;"
+                                  FontSize="8" Foreground="#3A3A3A"/>
+                    </Button>
 
-                        <!-- Close (exit app) -->
-                        <Button x:Name="CloseBtn"
-                                Click="CloseBtn_Click"
-                                ToolTipService.ToolTip="Exit"
-                                Width="26" Height="26" Padding="0"
-                                Background="Transparent" BorderThickness="0"
-                                CornerRadius="4">
-                            <FontIcon Glyph="&#xE711;"
-                                      FontSize="10" Foreground="#EF9A9A"/>
-                        </Button>
+                    <Button x:Name="CloseBtn" Click="CloseBtn_Click"
+                            Width="24" Height="24" Padding="0"
+                            Background="Transparent" BorderThickness="0"
+                            CornerRadius="4">
+                        <FontIcon Glyph="&#xE711;"
+                                  FontSize="8" Foreground="#3A3A3A"/>
+                    </Button>
 
-                    </StackPanel>
-                </Grid>
-
-                <!-- ── Content sections ── -->
-                <StackPanel x:Name="ContentPanel" Grid.Row="1" Spacing="8">
-                    <views:GoalsSectionView/>
-                    <views:TasksSectionView/>
-                    <views:ActivitySectionView/>
-                    <views:HabitsSectionView/>
                 </StackPanel>
-
             </Grid>
-        </Border>
+
+            <!-- ── Content ── -->
+            <StackPanel x:Name="ContentPanel" Grid.Row="1" Spacing="20">
+                <views:GoalsSectionView/>
+                <views:TasksSectionView/>
+                <views:ActivitySectionView/>
+                <views:HabitsSectionView/>
+            </StackPanel>
+        </Grid>
+
     </Grid>
 </Window>
